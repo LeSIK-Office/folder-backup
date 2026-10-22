@@ -1,0 +1,5 @@
+"NSDesktopFolderUsageDescription" = "選択したデスクトップのフォルダをバックアップ・復元します。";
+"NSDocumentsFolderUsageDescription" = "選択した書類フォルダをバックアップ・復元します。";
+"NSDownloadsFolderUsageDescription" = "選択したダウンロードフォルダをバックアップ・復元します。";
+"NSRemovableVolumesUsageDescription" = "選択した外付けドライブにフォルダのバックアップを保存・復元します。";
+"NSNetworkVolumesUsageDescription" = "選択したバックアップの保存先にアクセスします。";

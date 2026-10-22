@@ -1,0 +1,131 @@
+import XCTest
+@testable import BackupCore
+
+final class BackupEngineTests: XCTestCase {
+    private let fm = FileManager.default
+    private let engine = BackupEngine()
+
+    private func fixture() throws -> (URL, URL, URL) {
+        let root = fm.temporaryDirectory.appendingPathComponent("FolderBackup-BackupTests-" + UUID().uuidString)
+        let source = root.appendingPathComponent("원본")
+        let destination = root.appendingPathComponent("Backup")
+        try fm.createDirectory(at: source, withIntermediateDirectories: true)
+        try fm.createDirectory(at: destination, withIntermediateDirectories: false)
+        return (root, source, destination)
+    }
+
+    private func write(_ value: String, _ url: URL) throws {
+        try Data(value.utf8).write(to: url)
+    }
+
+    func testVersionedBackupRestoreAndIncrementalHardLinks() throws {
+        let (root, source, destination) = try fixture()
+        let plan = UUID()
+        try write("first", source.appendingPathComponent("changed.txt"))
+        try write("retained", source.appendingPathComponent("deleted.txt"))
+        try write("stable", source.appendingPathComponent(".hidden"))
+        try fm.createDirectory(at: source.appendingPathComponent("빈 폴더"), withIntermediateDirectories: false)
+        let first = try engine.backup(sources: [source], destination: destination, planID: plan)
+        try write("second", source.appendingPathComponent("changed.txt"))
+        try fm.moveItem(at: source.appendingPathComponent("deleted.txt"), to: root.appendingPathComponent("moved-out.txt"))
+        let second = try engine.backup(sources: [source], destination: destination, planID: plan)
+        XCTAssertEqual(try engine.snapshots(destination: destination, planID: plan).count, 2)
+        XCTAssertEqual(first.files, 3)
+        XCTAssertEqual(second.files, 2)
+        let original = try engine.restore(snapshotID: first.id, destination: destination, planID: plan, to: root)
+        XCTAssertEqual(try String(contentsOf: original.appendingPathComponent("원본/changed.txt"), encoding: .utf8), "first")
+        XCTAssertEqual(try String(contentsOf: original.appendingPathComponent("원본/deleted.txt"), encoding: .utf8), "retained")
+        XCTAssertTrue(fm.fileExists(atPath: original.appendingPathComponent("원본/빈 폴더").path))
+        XCTAssertEqual(try String(contentsOf: source.appendingPathComponent("changed.txt"), encoding: .utf8), "second")
+        for id in [first.id, second.id] { try engine.verify(snapshotID: id, destination: destination, planID: plan) }
+        let firstHidden = try engine.snapshotURL(snapshotID: first.id, destination: destination, planID: plan).appendingPathComponent("Files/원본/.hidden")
+        let secondHidden = try engine.snapshotURL(snapshotID: second.id, destination: destination, planID: plan).appendingPathComponent("Files/원본/.hidden")
+        let firstInode = try fm.attributesOfItem(atPath: firstHidden.path)[.systemFileNumber] as? NSNumber
+        let secondInode = try fm.attributesOfItem(atPath: secondHidden.path)[.systemFileNumber] as? NSNumber
+        XCTAssertEqual(firstInode, secondInode)
+        let beside = try engine.restoreBesideOriginal(snapshotID: first.id, destination: destination, planID: plan)
+        XCTAssertEqual(beside.count, 1)
+        XCTAssertEqual(beside[0].deletingLastPathComponent(), source.deletingLastPathComponent())
+        XCTAssertEqual(try String(contentsOf: beside[0].appendingPathComponent("changed.txt"), encoding: .utf8), "first")
+    }
+
+    func testCollisionExclusionsAndSymlinks() throws {
+        let (root, source, destination) = try fixture()
+        let second = root.appendingPathComponent("Other/원본")
+        try fm.createDirectory(at: second, withIntermediateDirectories: true)
+        try write("one", source.appendingPathComponent("keep.txt"))
+        try write("excluded", source.appendingPathComponent("cache.tmp"))
+        try write("two", second.appendingPathComponent("keep.txt"))
+        try fm.createSymbolicLink(atPath: source.appendingPathComponent("external-link").path, withDestinationPath: second.path)
+        let plan = UUID()
+        let snapshot = try engine.backup(sources: [source, second], destination: destination, planID: plan, exclusions: ["*.tmp"])
+        let entries = try engine.snapshotFiles(snapshotID: snapshot.id, destination: destination, planID: plan)
+        let roots = entries.filter { !$0.path.contains("/") }
+        XCTAssertEqual(roots.count, 2)
+        XCTAssertNotEqual(roots[0].path, roots[1].path)
+        XCTAssertFalse(entries.contains { $0.path.hasSuffix(".tmp") })
+        let link = try XCTUnwrap(entries.first { $0.kind == .symbolicLink })
+        XCTAssertEqual(link.linkTarget, second.path)
+        XCTAssertFalse(entries.contains { $0.path.contains("external-link/") })
+        let restored = try engine.restore(snapshotID: snapshot.id, destination: destination, planID: plan, to: root, relativePaths: [link.path])
+        XCTAssertEqual(try fm.destinationOfSymbolicLink(atPath: restored.appendingPathComponent(link.path).path), second.path)
+        XCTAssertFalse(fm.fileExists(atPath: restored.appendingPathComponent(roots[1].path + "/keep.txt").path))
+    }
+
+    func testRejectsNestedDestinationAndTraversal() throws {
+        let (root, source, destination) = try fixture()
+        let plan = UUID()
+        try write("safe", source.appendingPathComponent("a.txt"))
+        XCTAssertThrowsError(try engine.backup(sources: [root], destination: destination, planID: plan))
+        XCTAssertThrowsError(try engine.backup(sources: [source, source], destination: destination, planID: plan))
+        XCTAssertThrowsError(try engine.backup(sources: [source], destination: root.appendingPathComponent("not-mounted"), planID: plan))
+        let snapshot = try engine.backup(sources: [source], destination: destination, planID: plan)
+        for id in ["../escape", ".partial-unsafe", "a/b"] {
+            XCTAssertThrowsError(try engine.snapshotURL(snapshotID: id, destination: destination, planID: plan))
+        }
+        XCTAssertThrowsError(try engine.restore(snapshotID: snapshot.id, destination: destination, planID: plan, to: root, relativePaths: ["../escape"]))
+        let snapshotURL = try engine.snapshotURL(snapshotID: snapshot.id, destination: destination, planID: plan)
+        let malicious: [[String: Any]] = [["path": "../escape", "kind": "file", "bytes": 4, "modifiedAt": 0, "permissions": 420, "checksum": "bad"]]
+        try JSONSerialization.data(withJSONObject: malicious).write(to: snapshotURL.appendingPathComponent("manifest.json"))
+        XCTAssertThrowsError(try engine.snapshotFiles(snapshotID: snapshot.id, destination: destination, planID: plan))
+        XCTAssertThrowsError(try engine.restore(snapshotID: snapshot.id, destination: destination, planID: plan, to: root))
+    }
+
+    func testCancellationPreservesOnlyCompletedSnapshots() throws {
+        let (_, source, destination) = try fixture()
+        let plan = UUID()
+        try write("one", source.appendingPathComponent("a"))
+        let snapshot = try engine.backup(sources: [source], destination: destination, planID: plan)
+        let state = CancelState()
+        XCTAssertThrowsError(try engine.backup(sources: [source], destination: destination, planID: plan,
+                                               progress: { _ in state.cancel() }, cancelled: { state.cancelled })) { error in
+            guard case BackupError.cancelled = error else { return XCTFail("Unexpected error: \(error)") }
+        }
+        XCTAssertEqual(try engine.snapshots(destination: destination, planID: plan).map(\.id), [snapshot.id])
+        let planRoot = destination.appendingPathComponent("Toolkit Backups/" + plan.uuidString)
+        XCTAssertTrue(try fm.contentsOfDirectory(atPath: planRoot.path).contains { $0.hasPrefix(".partial-") })
+        try engine.verify(snapshotID: snapshot.id, destination: destination, planID: plan)
+    }
+
+    func testDetectsSourceMutationAndCorruptedCopy() throws {
+        let (root, source, destination) = try fixture()
+        let plan = UUID()
+        try write("old", source.appendingPathComponent("a"))
+        XCTAssertThrowsError(try engine.backup(sources: [source], destination: destination, planID: plan, progress: { progress in
+            if progress.completed == 1 { try? Data("modified".utf8).write(to: source.appendingPathComponent("a")) }
+        }))
+        XCTAssertTrue(try engine.snapshots(destination: destination, planID: plan).isEmpty)
+        let snapshot = try engine.backup(sources: [source], destination: destination, planID: plan)
+        let file = try engine.snapshotURL(snapshotID: snapshot.id, destination: destination, planID: plan).appendingPathComponent("Files/원본/a")
+        try write("corrupt", file)
+        XCTAssertThrowsError(try engine.verify(snapshotID: snapshot.id, destination: destination, planID: plan))
+        XCTAssertThrowsError(try engine.restore(snapshotID: snapshot.id, destination: destination, planID: plan, to: root))
+    }
+}
+
+private final class CancelState: @unchecked Sendable {
+    private let lock = NSLock()
+    private var value = false
+    var cancelled: Bool { lock.lock(); defer { lock.unlock() }; return value }
+    func cancel() { lock.lock(); value = true; lock.unlock() }
+}

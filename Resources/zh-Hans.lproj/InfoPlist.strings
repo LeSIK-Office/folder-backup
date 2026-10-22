@@ -1,0 +1,5 @@
+"NSDesktopFolderUsageDescription" = "允许 Folder Backup 备份和恢复你选择的桌面文件夹。";
+"NSDocumentsFolderUsageDescription" = "允许 Folder Backup 备份和恢复你选择的文稿文件夹。";
+"NSDownloadsFolderUsageDescription" = "允许 Folder Backup 备份和恢复你选择的下载文件夹。";
+"NSRemovableVolumesUsageDescription" = "允许 Folder Backup 在你选择的外置驱动器上保存和恢复文件夹备份。";
+"NSNetworkVolumesUsageDescription" = "允许 Folder Backup 访问你选择的备份位置。";

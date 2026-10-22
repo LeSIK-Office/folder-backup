@@ -1,0 +1,5 @@
+"NSDesktopFolderUsageDescription" = "선택한 데스크탑 폴더를 백업하거나 복원합니다.";
+"NSDocumentsFolderUsageDescription" = "선택한 문서 폴더를 백업하거나 복원합니다.";
+"NSDownloadsFolderUsageDescription" = "선택한 다운로드 폴더를 백업하거나 복원합니다.";
+"NSRemovableVolumesUsageDescription" = "선택한 외장 드라이브에 폴더 백업을 저장하거나 복원합니다.";
+"NSNetworkVolumesUsageDescription" = "사용자가 선택한 저장 위치에 접근합니다.";

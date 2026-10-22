@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleIdentifier</key>
+	<string>local.folderbackup</string>
+	<key>CFBundleName</key>
+	<string>Folder Backup</string>
+	<key>CFBundleDisplayName</key>
+	<string>Folder Backup</string>
+	<key>CFBundleExecutable</key>
+	<string>FolderBackup</string>
+	<key>CFBundleIconFile</key>
+	<string>FolderBackup.icns</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.5.1</string>
+	<key>CFBundleVersion</key>
+	<string>16</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>14.0</string>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+	<key>NSRequiresAquaSystemAppearance</key>
+	<true/>
+	<key>LSMultipleInstancesProhibited</key>
+	<true/>
+	<key>NSDesktopFolderUsageDescription</key>
+	<string>Allows Folder Backup to back up and restore the Desktop folders you choose.</string>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>Allows Folder Backup to back up and restore the Documents folders you choose.</string>
+	<key>NSDownloadsFolderUsageDescription</key>
+	<string>Allows Folder Backup to back up and restore the Downloads folders you choose.</string>
+	<key>NSRemovableVolumesUsageDescription</key>
+	<string>Allows Folder Backup to save and restore folder backups on the external drives you choose.</string>
+	<key>NSNetworkVolumesUsageDescription</key>
+	<string>Allows Folder Backup to access the backup location you choose.</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>ko</string>
+		<string>ja</string>
+		<string>zh-Hans</string>
+		<string>es</string>
+	</array>
+</dict>
+</plist>

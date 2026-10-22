@@ -1,0 +1,5 @@
+"NSDesktopFolderUsageDescription" = "Permite a Folder Backup copiar y restaurar las carpetas del Escritorio que elijas.";
+"NSDocumentsFolderUsageDescription" = "Permite a Folder Backup copiar y restaurar las carpetas de Documentos que elijas.";
+"NSDownloadsFolderUsageDescription" = "Permite a Folder Backup copiar y restaurar las carpetas de Descargas que elijas.";
+"NSRemovableVolumesUsageDescription" = "Permite a Folder Backup guardar y restaurar copias en las unidades externas que elijas.";
+"NSNetworkVolumesUsageDescription" = "Permite a Folder Backup acceder a la ubicación de copia que elijas.";

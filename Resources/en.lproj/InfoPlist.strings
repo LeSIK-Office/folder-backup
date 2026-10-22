@@ -1,0 +1,5 @@
+"NSDesktopFolderUsageDescription" = "Allows Folder Backup to back up and restore the Desktop folders you choose.";
+"NSDocumentsFolderUsageDescription" = "Allows Folder Backup to back up and restore the Documents folders you choose.";
+"NSDownloadsFolderUsageDescription" = "Allows Folder Backup to back up and restore the Downloads folders you choose.";
+"NSRemovableVolumesUsageDescription" = "Allows Folder Backup to save and restore folder backups on the external drives you choose.";
+"NSNetworkVolumesUsageDescription" = "Allows Folder Backup to access the backup location you choose.";
