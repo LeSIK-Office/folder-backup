@@ -28,6 +28,7 @@ struct BackupCartridgesView: View {
                     Button { refreshID = UUID() } label: { Image(systemName: "arrow.clockwise") }
                         .buttonStyle(.plain).accessibilityLabel(L10n.text("Refresh Saved Backups")).disabled(loading || store.maintenance)
                 }
+                VerificationProgressView(store: store, planID: plan.id)
                 if loading {
                     HStack(spacing: 8) {
                         ProgressView().controlSize(.small)
@@ -62,8 +63,12 @@ struct BackupCartridgesView: View {
                                     Text(L10n.text("New file contents saved in this run: %@", byteString(copiedBytes)))
                                         .font(.system(size: 11)).foregroundStyle(.secondary)
                                 }
+                                VerificationStatusView(result: store.plans.first(where: { $0.id == plan.id })?.verificationResults?[snapshot.id])
                             }
                             Spacer(minLength: 12)
+                            Button(L10n.text("Verify Version")) { store.verifyVersions(planID: plan.id, snapshotID: snapshot.id) }
+                                .buttonStyle(BackupButton(secondary: true)).disabled(store.runningID != nil || store.maintenance)
+                                .accessibilityIdentifier("verify-version-" + snapshot.id)
                             Button(L10n.text("Restore")) { openSnapshot(snapshot.id) }.buttonStyle(BackupButton(secondary: true))
                                 .disabled(store.runningID != nil || store.maintenance)
                             Button(role: .destructive) { deleting = snapshot } label: {

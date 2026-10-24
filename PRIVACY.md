@@ -9,6 +9,7 @@ you choose. Restoring creates a new folder. macOS may ask for permission to acce
 protected folders, removable drives or network volumes.
 
 Settings include selected paths, access bookmarks, schedules and run history.
+Verification results include version identifiers, check times and any failed file paths; they are saved only in the same local plan settings, not in the backup store.
 They are stored locally in the app's Application Support folder. Backups contain
 file names, file contents and metadata needed to restore your files. Diagnostic
 details can contain paths; review them before sharing them in a public issue.

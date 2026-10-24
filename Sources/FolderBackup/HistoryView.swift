@@ -44,6 +44,13 @@ struct HistoryView: View {
                                 Text(L10n.date(item.createdAt)).font(.system(size: 12, weight: .medium))
                                 Text(L10n.text("Files: %@ · Total: %@", item.files, byteString(item.bytes))).font(.system(size: 11)).foregroundStyle(.secondary)
                                 if let added = item.copiedBytes { Text(L10n.text("New contents: %@", byteString(added))).font(.system(size: 11)).foregroundStyle(.secondary) }
+                                HStack {
+                                    Button(L10n.text("Verify Version")) { store.verifyVersions(planID: plan.id, snapshotID: item.id) }
+                                        .buttonStyle(.borderless).disabled(store.runningID != nil || store.maintenance)
+                                        .accessibilityIdentifier("verify-version-" + item.id)
+                                    Spacer()
+                                }
+                                VerificationStatusView(result: store.plans.first(where: { $0.id == plan.id })?.verificationResults?[item.id])
                             }.padding(.vertical, 7).tag(item.id)
                         }.listStyle(.sidebar)
                         Text(L10n.text("Versions: %@ · %@", snapshots.count, (plan.retention ?? BackupRetention()).title)).font(.system(size: 11)).foregroundStyle(.secondary).padding(15)
@@ -75,24 +82,25 @@ struct HistoryView: View {
                 }
             }
             Divider()
+            VerificationProgressView(store: store, planID: plan.id).padding(.horizontal, 18)
             HStack {
                 if busy || loadingFiles { ProgressView().controlSize(.small) }
                 Text(L10n.message(message)).font(.system(size: 11)).foregroundStyle(.secondary).lineLimit(2)
                 Spacer()
                 if !showLog {
                     Menu {
-                        Button(L10n.text("Verify Backup")) { verify() }
+                        Button(L10n.text("Verify Version")) { if let selected { store.verifyVersions(planID: plan.id, snapshotID: selected) } }
                         Button(L10n.text("Show Backup Folder")) { reveal() }
                         Button(L10n.text("Move This Version to Trash…"), role: .destructive) { trash = snapshot }
                     } label: { Image(systemName: "ellipsis.circle").font(.system(size: 20)) }.menuStyle(.borderlessButton).fixedSize()
-                        .disabled(snapshot == nil || busy || loadingFiles || store.runningID != nil)
+                        .disabled(snapshot == nil || busy || loadingFiles || store.runningID != nil || store.maintenance)
                     Menu {
                         Button(L10n.text("Restore to Another Location…")) { restore(besideOriginal: false) }
                         Button(L10n.text("Restore Beside Original (Keep Existing Files)")) { restore(besideOriginal: true) }
                     } label: {
                         Text(selection.isEmpty ? L10n.text("Restore All") : L10n.text("Restore Selected"))
                             .padding(.horizontal, 16).padding(.vertical, 10).foregroundStyle(.white).background(BackupTheme.accent).clipShape(RoundedRectangle(cornerRadius: 4))
-                    }.menuStyle(.borderlessButton).fixedSize().disabled(snapshot == nil || busy || loadingFiles || store.runningID != nil)
+                    }.menuStyle(.borderlessButton).fixedSize().disabled(snapshot == nil || busy || loadingFiles || store.runningID != nil || store.maintenance)
                 }
             }.padding(18)
         }
@@ -191,14 +199,6 @@ struct HistoryView: View {
                 return try engine.restoreBesideOriginal(snapshotID: selected, destination: destination, planID: plan.id, relativePaths: Array(selection))
             }
             return [try engine.restore(snapshotID: selected, destination: destination, planID: plan.id, to: parent!, relativePaths: Array(selection))]
-        }
-    }
-
-    private func verify() {
-        guard let selected else { return }
-        operation(L10n.text("Checking backup file SHA-256 hashes…")) { destination in
-            try BackupEngine().verify(snapshotID: selected, destination: destination, planID: plan.id)
-            return []
         }
     }
 

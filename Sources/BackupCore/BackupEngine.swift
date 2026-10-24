@@ -60,6 +60,29 @@ public struct BackupFileEntry: Codable, Sendable, Identifiable, Equatable {
     public var createdAt: Date? = nil
 }
 
+public struct BackupVerificationIssue: Codable, Sendable, Identifiable {
+    public var id: String { path }
+    public let path: String
+    public let message: String
+}
+
+public struct BackupVerificationResult: Codable, Sendable, Identifiable {
+    public var id: String { snapshotID }
+    public let snapshotID: String
+    public let lastVerifiedAt: Date
+    public let files: Int
+    public let uniqueObjectsChecked: Int
+    public let issues: [BackupVerificationIssue]
+    public var passed: Bool { issues.isEmpty }
+}
+
+public struct BackupVerificationProgress: Sendable {
+    public let snapshotID: String
+    public let completed: Int
+    public let total: Int
+    public let path: String
+}
+
 public enum BackupError: LocalizedError {
     case invalid(String), changed(String), corrupted(String), incomplete([String]), cancelled, busy
     public var errorDescription: String? {
@@ -677,6 +700,77 @@ public final class BackupEngine: Sendable {
         }
     }
 
+    public func verifyVersions(snapshotIDs: [String], destination: URL, planID: UUID,
+                               progress: @escaping @Sendable (BackupVerificationProgress) -> Void = { _ in },
+                               completed: @escaping @Sendable (BackupVerificationResult) -> Void = { _ in },
+                               cancelled: @escaping @Sendable () -> Bool = { false }) throws -> [BackupVerificationResult] {
+        let plan = try planRoot(try existingDirectory(destination), planID, create: false)
+        let descriptor = open(plan.appendingPathComponent(".lock").path, O_RDONLY | O_NOFOLLOW)
+        if descriptor < 0 && errno != ENOENT { throw NSError(domain: NSPOSIXErrorDomain, code: Int(errno)) }
+        defer { if descriptor >= 0 { _ = flock(descriptor, LOCK_UN); close(descriptor) } }
+        if descriptor >= 0 && flock(descriptor, LOCK_SH | LOCK_NB) != 0 { throw BackupError.busy }
+        // Legacy stores may have no lock file; verification never creates one.
+        var checked: [String: String] = [:]
+        var results: [BackupVerificationResult] = []
+        for id in snapshotIDs {
+            if cancelled() { throw BackupError.cancelled }
+            let folder = try snapshotURL(snapshotID: id, destination: destination, planID: planID)
+            let summary = folder.appendingPathComponent("snapshot.json")
+            try rejectSymlink(summary)
+            let snapshot = try JSONDecoder().decode(BackupSnapshot.self, from: Data(contentsOf: summary))
+            guard snapshot.id == id else { throw BackupError.corrupted(id) }
+            progress(BackupVerificationProgress(snapshotID: id, completed: 0, total: 0, path: ""))
+            var issues: [BackupVerificationIssue] = []
+            var count = 0
+            var unique = 0
+            do {
+                let catalog = try snapshotFiles(snapshotID: id, destination: destination, planID: planID, cancelled: cancelled)
+                var totalBytes: Int64 = 0
+                for entry in catalog {
+                    let sum = totalBytes.addingReportingOverflow(entry.bytes)
+                    guard entry.bytes >= 0, !sum.overflow else { throw BackupError.corrupted("manifest.json") }
+                    totalBytes = sum.partialValue
+                }
+                guard catalog.filter({ $0.kind != .directory }).count == snapshot.files,
+                      totalBytes == snapshot.bytes else { throw BackupError.corrupted("manifest.json") }
+                let entries = catalog.filter { $0.kind == .file }
+                count = entries.count
+                let root = folder.appendingPathComponent("Files")
+                let stores = try packedStores(root: root, immutable: true)
+                let archived = manager.fileExists(atPath: folder.appendingPathComponent(PackedObjects.filename).path)
+                    || manager.fileExists(atPath: folder.appendingPathComponent(".objects").path)
+                let scope = archived ? folder.path : plan.path
+                for (index, entry) in entries.enumerated() {
+                    if cancelled() { throw BackupError.cancelled }
+                    try autoreleasepool {
+                        let key = entry.storageKey.map { scope + "/" + $0 + ":" + String(entry.bytes) } ?? (root.path + "/" + entry.path)
+                        let failure: String
+                        if let cached = checked[key] { failure = cached }
+                        else {
+                            unique += 1
+                            do { try verify(entry, root: root, stores: stores, cancelled: cancelled); failure = "" }
+                            catch {
+                                if cancelled() { throw BackupError.cancelled }
+                                failure = error.localizedDescription
+                            }
+                            checked[key] = failure
+                        }
+                        if !failure.isEmpty { issues.append(BackupVerificationIssue(path: entry.path, message: failure)) }
+                    }
+                    progress(BackupVerificationProgress(snapshotID: id, completed: index + 1, total: count, path: entry.path))
+                }
+            } catch {
+                if cancelled() { throw BackupError.cancelled }
+                issues.append(BackupVerificationIssue(path: "manifest.json", message: error.localizedDescription))
+            }
+            if cancelled() { throw BackupError.cancelled }
+            let result = BackupVerificationResult(snapshotID: id, lastVerifiedAt: Date(), files: count, uniqueObjectsChecked: unique, issues: issues)
+            results.append(result)
+            completed(result)
+        }
+        return results
+    }
+
     public func restore(snapshotID: String, destination: URL, planID: UUID, to restoreParent: URL, relativePaths: [String] = []) throws -> URL {
         let parent = try existingDirectory(restoreParent)
         let snapshot = try snapshotURL(snapshotID: snapshotID, destination: destination, planID: planID)
@@ -774,7 +868,7 @@ public final class BackupEngine: Sendable {
         try manager.moveItem(at: staging, to: result)
     }
 
-    private func verify(_ entry: BackupFileEntry, root: URL, stores: [PackedObjects]) throws {
+    private func verify(_ entry: BackupFileEntry, root: URL, stores: [PackedObjects], cancelled: () -> Bool = { false }) throws {
         try autoreleasepool {
             if let data = try packedData(entry, stores: stores) {
                 guard data.count == entry.bytes else { throw BackupError.corrupted(entry.path) }
@@ -789,7 +883,7 @@ public final class BackupEngine: Sendable {
             let type = attributes[.type] as? FileAttributeType
             switch entry.kind {
             case .file:
-                guard type == .typeRegular, entry.checksum != nil, try hash(url) == entry.checksum else { throw BackupError.corrupted(entry.path) }
+                guard type == .typeRegular, entry.checksum != nil, try hash(url, cancelled: cancelled) == entry.checksum else { throw BackupError.corrupted(entry.path) }
             case .directory:
                 guard type == .typeDirectory else { throw BackupError.corrupted(entry.path) }
             case .symbolicLink:
@@ -799,9 +893,9 @@ public final class BackupEngine: Sendable {
         }
     }
 
-    private func packedStores(root: URL) throws -> [PackedObjects] {
+    private func packedStores(root: URL, immutable: Bool = false) throws -> [PackedObjects] {
         try [root.deletingLastPathComponent(), root.deletingLastPathComponent().deletingLastPathComponent()]
-            .compactMap { try PackedObjects.open(at: $0) }
+            .compactMap { try PackedObjects.open(at: $0, immutable: immutable) }
     }
 
     private func packedData(_ entry: BackupFileEntry, stores: [PackedObjects]) throws -> Data? {

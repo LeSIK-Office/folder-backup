@@ -12,25 +12,26 @@ final class PackedObjects {
     private var pending = 0
     private let transient = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
 
-    static func open(at root: URL, create: Bool = false) throws -> PackedObjects? {
+    static func open(at root: URL, create: Bool = false, immutable: Bool = false) throws -> PackedObjects? {
         let url = root.appendingPathComponent(filename)
         var attributes = stat()
         if !create && lstat(url.path, &attributes) != 0 {
             if errno == ENOENT { return nil }
             throw NSError(domain: NSPOSIXErrorDomain, code: Int(errno))
         }
-        return try PackedObjects(url: url, create: create)
+        return try PackedObjects(url: url, create: create, immutable: immutable)
     }
 
-    private init(url: URL, create: Bool) throws {
+    private init(url: URL, create: Bool, immutable: Bool) throws {
         for path in [url.path, url.path + "-journal", url.path + "-wal", url.path + "-shm"] {
             var s = stat()
             if lstat(path, &s) == 0, s.st_mode & S_IFMT != S_IFREG {
                 throw BackupError.invalid(L10n.text("The packed storage path is not a regular file: %@", path))
             }
         }
-        let flags = (create ? SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE : SQLITE_OPEN_READONLY) | SQLITE_OPEN_FULLMUTEX | SQLITE_OPEN_NOFOLLOW
-        guard sqlite3_open_v2(url.path, &database, flags, nil) == SQLITE_OK else {
+        let flags = (create ? SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE : SQLITE_OPEN_READONLY) | SQLITE_OPEN_FULLMUTEX | SQLITE_OPEN_NOFOLLOW | (immutable ? SQLITE_OPEN_URI : 0)
+        let path = immutable ? url.absoluteString + "?immutable=1" : url.path
+        guard sqlite3_open_v2(path, &database, flags, nil) == SQLITE_OK else {
             let error = failure(); sqlite3_close(database); database = nil; throw error
         }
         do {

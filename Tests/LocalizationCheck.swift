@@ -43,7 +43,7 @@ import BackupCore
             catalogs[locale] = values
         }
         let reference = catalogs["en"]!
-        precondition(reference.count == 310)
+        precondition(reference.count == 332)
         for (_, catalog) in catalogs {
             precondition(Set(catalog.keys) == Set(reference.keys))
             for (key, value) in catalog {
@@ -92,6 +92,6 @@ import BackupCore
         let persisted = String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)!.trimmingCharacters(in: .whitespacesAndNewlines)
         precondition(child.terminationStatus == 0 && persisted == "es")
         print("Language selection survives process restart: PASS")
-        print("Localization PASS: 310 matching keys × 5, all placeholders, primary-language fallback, overrides, defaults, recorded messages and real fixture restores")
+        print("Localization PASS: 332 matching keys × 5, all placeholders, primary-language fallback, overrides, defaults, recorded messages and real fixture restores")
     }
 }

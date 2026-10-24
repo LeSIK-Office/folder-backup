@@ -110,6 +110,7 @@ final class BackupEngineTests {
         }
         try JSONSerialization.data(withJSONObject: entries).write(to: manifest)
         try engine.verify(snapshotID: snapshot.id, destination: destination, planID: plan)
+        expect(try engine.verifyVersions(snapshotIDs: [snapshot.id], destination: destination, planID: plan)[0].passed)
         let restored = try engine.restore(snapshotID: snapshot.id, destination: destination, planID: plan, to: root)
         expectEqual(try String(contentsOf: restored.appendingPathComponent("원본/a"), encoding: .utf8), "legacy")
     }

@@ -13,6 +13,7 @@ struct AppSettings: View {
     @State private var retention = BackupRetention()
     @State private var exclusions = ""
     @State private var paused = false
+    @State private var verificationSchedule = VerificationSchedule.off
     @State private var login = SMAppService.mainApp.status == .enabled
     @State private var message = ""
     @State private var error: String?
@@ -60,6 +61,18 @@ struct AppSettings: View {
                                     .accessibilityIdentifier("schedule-enabled")
                                 ScheduleControls(schedule: $schedule, enabled: !paused).id(store.language)
                                 Text(L10n.text("Turning off the schedule does not stop a running backup. Changes apply to the next scheduled run."))
+                                    .font(.caption).foregroundStyle(.secondary)
+                            }
+                        }.disabled(scheduleLocked)
+                        BackupCard {
+                            VStack(alignment: .leading, spacing: 12) {
+                                Text(L10n.text("Scheduled Verification")).font(.headline)
+                                Picker(L10n.text("Verify Saved Versions"), selection: $verificationSchedule) {
+                                    ForEach(VerificationSchedule.allCases, id: \.self) { Text($0.title).tag($0) }
+                                }.frame(maxWidth: 330).accessibilityIdentifier("verification-schedule")
+                                Text(L10n.text("Off by default. Checks every completed version that has never been verified or is due again. The app must be running and the drive connected. Failures appear on the affected version; successful checks stay quiet."))
+                                    .font(.caption).foregroundStyle(.secondary)
+                                Text(L10n.text("Verification only reads backup data. It does not restore files or use extra backup space."))
                                     .font(.caption).foregroundStyle(.secondary)
                             }
                         }.disabled(scheduleLocked)
@@ -167,12 +180,13 @@ struct AppSettings: View {
         guard let plan else { return }
         schedule = plan.schedule; retention = plan.retention ?? BackupRetention()
         exclusions = plan.exclusions.joined(separator: "\n"); paused = plan.paused; message = ""
+        verificationSchedule = plan.verificationSchedule ?? .off
     }
     private func save() {
         guard var plan else { return }
         plan.schedule = schedule; plan.retention = retention; plan.paused = paused
         plan.exclusions = exclusions.split(separator: "\n").map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
-        if section == 0 { store.saveSchedule(id: plan.id, schedule: schedule, paused: paused) }
+        if section == 0 { store.saveSchedule(id: plan.id, schedule: schedule, paused: paused, verificationSchedule: verificationSchedule) }
         else { store.savePlan(plan) }
         if let failure = store.error { error = failure; store.error = nil }
         else if section == 0 { message = paused ? L10n.text("Scheduled backups are off. You can still back up manually.") : L10n.text("Schedule saved. Changes apply to the next scheduled run.") }

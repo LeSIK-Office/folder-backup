@@ -113,3 +113,32 @@ SHA-256은 기록된 값과 내용의 일치 여부를 검사하며 암호화·�
 악의적인 저장소 변조를 막는 보안 보관함은 아닙니다. 폴더 전체를 한순간에 고정하지
 않으므로 실시간 데이터베이스 등은 앱을 닫거나 해당 프로그램의 일관성 있는 내보내기를
 먼저 사용하는 편이 좋습니다.
+
+## Version verification / 완료본 검사
+
+`BackupEngine.verifyVersions` reuses catalog validation, the existing streaming
+hash function and packed-content checks. It acquires the existing store lock
+read-only with a shared lock, if present, and never creates a lock for a legacy
+store. Verification opens SQLite using read-only immutable URIs, so it cannot
+create journal/WAL/SHM files. A writer holding the plan lock causes a busy result.
+A local cache covers shared objects within a batch; legacy physical copies are
+checked separately. Errors map back to every affected catalog path.
+
+`BackupStore` persists optional per-plan verification schedules and per-version
+results (`lastVerifiedAt`, file count, unique reads and issues) in `plans.json`.
+Missing fields in older settings mean OFF/no previous check. Backup schedules
+have priority; verification runs when idle, including after a completed backup.
+No-due-version scans are throttled for an hour; saving the verification schedule
+or creating a new completed backup clears that throttle. Calendar intervals use
+the current local timezone. The next normal scheduler tick handles new due work;
+there is no fixed verification clock-time setting or wake-from-sleep service.
+Success is quiet; failed-version badges and result details are visible in the UI.
+Checks do not prove an untampered catalog's authorship or application consistency.
+
+기존 목록·해시·묶음 검증 코드를 재사용합니다. 기존 잠금 파일을 읽기 전용으로 열어 공유
+잠금을 잡고, 이전 저장소에 잠금 파일이 없으면 새로 만들지 않습니다. SQLite도 immutable
+읽기 모드로 열어 저널·WAL·SHM 파일 생성을 막습니다. 같은 내용은 배치 안에서 한 번
+검사하며 실제 사본이 별개인 이전 형식은 각각 읽습니다. 결과는 계획 설정에만 저장합니다.
+예약 백업을 우선하고 유휴 시 또는 백업 직후 검사를 실행합니다. 검사할 버전이 없을 때의
+재탐색은 한 시간 간격으로 제한하며 검사 예약 저장·새 완료본 생성 시 제한을 해제합니다.
+주기는 현재 시간대의 달력 기준이며 정해진 시각 실행이나 Mac 깨우기는 제공하지 않습니다.

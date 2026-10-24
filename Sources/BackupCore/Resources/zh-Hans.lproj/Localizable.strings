@@ -308,3 +308,47 @@
 "You can change the schedule during a backup. Stop the backup before changing folders or retention." = "备份期间可以调整计划时间。修改文件夹或保留策略前，请先停止备份。";
 "Your first backup is running. It will appear here when complete." = "首次备份正在进行，完成后会显示在这里。";
 "Your folders. Simply backed up." = "选好文件夹，轻松备份。";
+
+"Off" = "关闭";
+
+"Verify Version" = "验证此版本";
+
+"Not verified yet" = "尚未验证";
+
+"Files verified OK: %@" = "%@ 个文件验证通过";
+
+"Verification failed · Issues: %@" = "验证失败 · %@ 项问题";
+
+"Verifying files: %@ / %@" = "正在验证文件：%@ / %@";
+
+"Cancel Verification" = "取消验证";
+
+"Reading backup catalog…" = "正在读取备份目录…";
+
+"Verification Result" = "备份验证结果";
+
+"Unique contents read in this run: %@" = "本次读取的唯一文件内容：%@ 项";
+
+"SHA-256 checks read saved contents without creating a restore folder. Backup data and source files are never changed. Results are saved only in this Mac’s plan settings." = "直接读取已保存的内容并核对 SHA-256，不创建恢复文件夹，也不更改备份或源文件。结果仅保存在此 Mac 的计划设置中。";
+
+"Scheduled Verification" = "定期完整性验证";
+
+"Verify Saved Versions" = "已完成版本的验证频率";
+
+"Off by default. Checks every completed version that has never been verified or is due again. The app must be running and the drive connected. Failures appear on the affected version; successful checks stay quiet." = "默认关闭。检查所有从未验证或已到验证周期的已完成版本。需要应用正在运行且硬盘已连接。失败会标记在对应版本上，成功则静默记录。";
+
+"Verification only reads backup data. It does not restore files or use extra backup space." = "验证仅以只读方式访问备份，不恢复文件，也不额外占用备份空间。";
+
+"Stopping verification…" = "正在停止验证…";
+
+"Verifying saved backups…" = "正在验证已完成的备份…";
+
+"Backup verification failed. Review the affected versions." = "备份验证发现问题，请查看受影响版本的详情。";
+
+"No backup versions are due for verification." = "当前没有需要验证的备份版本。";
+
+"Verification cancelled. Previous results were kept." = "验证已取消，之前的结果已保留。";
+
+"Verification could not finish." = "未能完成验证。";
+
+"Could not save verification results: %@" = "无法保存验证结果：%@";

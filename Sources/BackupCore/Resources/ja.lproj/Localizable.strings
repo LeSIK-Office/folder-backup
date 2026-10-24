@@ -308,3 +308,47 @@
 "You can change the schedule during a backup. Stop the backup before changing folders or retention." = "実行中でもスケジュールは変更できます。フォルダと保持設定は停止してから変更してください。";
 "Your first backup is running. It will appear here when complete." = "最初のバックアップを実行中です。完了するとここに表示されます。";
 "Your folders. Simply backed up." = "選んだフォルダを、手軽にバックアップ。";
+
+"Off" = "オフ";
+
+"Verify Version" = "この版を検証";
+
+"Not verified yet" = "未検証";
+
+"Files verified OK: %@" = "%@個のファイルを検証済み";
+
+"Verification failed · Issues: %@" = "検証失敗 · 問題%@件";
+
+"Verifying files: %@ / %@" = "ファイルを検証中: %@ / %@";
+
+"Cancel Verification" = "検証をキャンセル";
+
+"Reading backup catalog…" = "バックアップ一覧を読み込み中…";
+
+"Verification Result" = "バックアップの検証結果";
+
+"Unique contents read in this run: %@" = "今回読み取った重複のないデータ: %@件";
+
+"SHA-256 checks read saved contents without creating a restore folder. Backup data and source files are never changed. Results are saved only in this Mac’s plan settings." = "復元フォルダを作らず、保存済みデータのSHA-256を照合します。バックアップと元ファイルは変更しません。結果はこのMacのプラン設定にのみ保存します。";
+
+"Scheduled Verification" = "定期検証";
+
+"Verify Saved Versions" = "保存済みバージョンの検証間隔";
+
+"Off by default. Checks every completed version that has never been verified or is due again. The app must be running and the drive connected. Failures appear on the affected version; successful checks stay quiet." = "初期設定はオフです。未検証、または検証間隔を過ぎたすべての完了済みバージョンを確認します。アプリの起動とドライブの接続が必要です。問題は該当バージョンに表示し、正常時は通知せず記録します。";
+
+"Verification only reads backup data. It does not restore files or use extra backup space." = "検証はバックアップの読み取りのみです。ファイルの復元や追加のバックアップ領域は不要です。";
+
+"Stopping verification…" = "検証を停止中…";
+
+"Verifying saved backups…" = "保存済みバックアップを検証中…";
+
+"Backup verification failed. Review the affected versions." = "バックアップに問題が見つかりました。該当バージョンの詳細を確認してください。";
+
+"No backup versions are due for verification." = "検証が必要なバージョンはありません。";
+
+"Verification cancelled. Previous results were kept." = "検証をキャンセルしました。以前の結果は保持されています。";
+
+"Verification could not finish." = "検証を完了できませんでした。";
+
+"Could not save verification results: %@" = "検証結果を保存できませんでした: %@";

@@ -3,7 +3,7 @@
 ## English
 
 English (`en`), Korean (`ko`), Japanese (`ja`), Simplified Chinese (`zh-Hans`) and
-Spanish (`es`) are bundled. Each has 310 matching app string keys and five macOS
+Spanish (`es`) are bundled. Each has 332 matching app string keys and five macOS
 permission descriptions. The default is **System language**; manual selection in
 **Settings → App → Language** persists across restarts.
 
@@ -25,7 +25,7 @@ review has not been obtained. Contributions improving natural wording are welcom
 
 ## 한국어
 
-영어·한국어·일본어·중국어 간체·스페인어를 내장합니다. 언어별 앱 문구 310개와 macOS
+영어·한국어·일본어·중국어 간체·스페인어를 내장합니다. 언어별 앱 문구 332개와 macOS
 접근 권한 설명 5개가 있습니다. 기본값은 **시스템 언어 사용**이고 **설정 → 앱 → 언어**에서
 강제로 선택하면 재실행 뒤에도 유지됩니다.
 

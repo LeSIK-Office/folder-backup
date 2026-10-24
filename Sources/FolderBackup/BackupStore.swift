@@ -89,6 +89,24 @@ struct BackupRun: Identifiable, Codable {
     var message: String?
 }
 
+enum VerificationSchedule: String, Codable, CaseIterable {
+    case off, daily, weekly, monthly
+    var title: String {
+        switch self {
+        case .off: return L10n.text("Off")
+        case .daily: return L10n.text("Daily")
+        case .weekly: return L10n.text("Weekly")
+        case .monthly: return L10n.text("Monthly")
+        }
+    }
+    func isDue(_ result: BackupVerificationResult?, at now: Date, calendar: Calendar = .current) -> Bool {
+        guard self != .off else { return false }
+        guard let result else { return true }
+        let component: Calendar.Component = self == .daily ? .day : self == .weekly ? .weekOfYear : .month
+        return (calendar.date(byAdding: component, value: 1, to: result.lastVerifiedAt) ?? .distantFuture) <= now
+    }
+}
+
 struct BackupPlan: Identifiable, Codable {
     var id: UUID = UUID()
     var name: String
@@ -105,6 +123,8 @@ struct BackupPlan: Identifiable, Codable {
     var history: [BackupRun] = []
     var lastFingerprint: String?
     var retention: BackupRetention?
+    var verificationSchedule: VerificationSchedule? = nil
+    var verificationResults: [String: BackupVerificationResult]? = nil
 }
 
 private enum RuntimeError: LocalizedError {
@@ -142,10 +162,14 @@ final class BackupStore: ObservableObject {
     @Published var progress: BackupProgress?
     @Published var status = L10n.text("Choose a folder to back up.")
     @Published var error: String?
+    @Published var verificationPlanID: UUID?
+    @Published var verificationProgress: BackupVerificationProgress?
 
     private let storageURL: URL
     private var canSave = true
     private var cancellation: CancellationFlag?
+    private var verificationCancellation: CancellationFlag?
+    private var verificationRetryAfter: [UUID: Date] = [:]
     private var scheduler: Task<Void, Never>?
     private var observers: [NSObjectProtocol] = []
 
@@ -207,6 +231,9 @@ final class BackupStore: ObservableObject {
             guard !plan.sources.isEmpty else { throw RuntimeError.message(L10n.text("Choose at least one folder to back up.")) }
             guard !plan.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { throw RuntimeError.message(L10n.text("Enter a backup name.")) }
             var saved = plan
+            if let existing = plans.first(where: { $0.id == plan.id }) {
+                saved.verificationResults = existing.destination == plan.destination ? existing.verificationResults : nil
+            }
             saved.sources = try plan.sources.map { selection in
                 var refreshed = try FolderSelection(url: selection.resolve())
                 refreshed.id = selection.id
@@ -245,13 +272,18 @@ final class BackupStore: ObservableObject {
         } catch { self.error = error.localizedDescription }
     }
 
-    func saveSchedule(id: UUID, schedule: BackupSchedule, paused: Bool) {
+    func saveSchedule(id: UUID, schedule: BackupSchedule, paused: Bool, verificationSchedule: VerificationSchedule? = nil) {
         guard canSave else { error = L10n.text("Settings could not be read, so no changes were saved."); return }
         guard let index = plans.firstIndex(where: { $0.id == id }) else { return }
         var updated = plans
+        let backupScheduleChanged = updated[index].schedule != schedule || updated[index].paused != paused
         updated[index].schedule = schedule
         updated[index].paused = paused
-        updated[index].nextRun = schedule.next(after: Date())
+        if let verificationSchedule {
+            if updated[index].verificationSchedule != verificationSchedule { verificationRetryAfter[id] = nil }
+            updated[index].verificationSchedule = verificationSchedule
+        }
+        if backupScheduleChanged { updated[index].nextRun = schedule.next(after: Date()) }
         do {
             try persist(updated)
             plans = updated
@@ -281,12 +313,89 @@ final class BackupStore: ObservableObject {
                 return
             }
         }
+        checkVerificationSchedules(now: now)
+    }
+
+    private func checkVerificationSchedules(now: Date) {
+        guard runningID == nil, !maintenance, canSave else { return }
+        for plan in plans where (plan.verificationSchedule ?? .off) != .off {
+            guard (verificationRetryAfter[plan.id] ?? .distantPast) <= now,
+                  (try? plan.destination.resolve()) != nil else { continue }
+            verifyVersions(planID: plan.id, now: now)
+            return
+        }
+    }
+
+    func cancelVerification() {
+        verificationCancellation?.cancel()
+        if verificationPlanID != nil { status = L10n.text("Stopping verification…") }
+    }
+
+    func verifyVersions(planID: UUID, snapshotID: String? = nil, now: Date = Date()) {
+        guard canSave, runningID == nil, !maintenance,
+              let plan = plans.first(where: { $0.id == planID }) else { return }
+        let token = CancellationFlag()
+        verificationCancellation = token
+        verificationPlanID = planID
+        verificationProgress = nil
+        maintenance = true
+        status = L10n.text("Verifying saved backups…")
+        // Avoid repeatedly rescanning a job with no due versions or unreadable metadata.
+        verificationRetryAfter[planID] = now.addingTimeInterval(3600)
+        Task { @MainActor in
+            defer {
+                verificationCancellation = nil; verificationPlanID = nil
+                verificationProgress = nil; maintenance = false
+            }
+            do {
+                let destination = try plan.destination.resolve()
+                let results = try await Task.detached(priority: .utility) { [self] in
+                    let engine = BackupEngine()
+                    let versions = try engine.snapshots(destination: destination, planID: planID)
+                    let due = versions.filter {
+                        if let snapshotID { return $0.id == snapshotID }
+                        return (plan.verificationSchedule ?? .off).isDue(plan.verificationResults?[$0.id], at: now)
+                    }
+                    if let snapshotID, !due.contains(where: { $0.id == snapshotID }) {
+                        throw BackupError.invalid(L10n.text("This saved backup could not be found. Refresh the list on the main screen."))
+                    }
+                    return try engine.verifyVersions(snapshotIDs: due.map(\.id), destination: destination, planID: planID,
+                        progress: { update in
+                            guard update.completed == 0 || update.completed == update.total || update.completed % 128 == 0 else { return }
+                            Task { @MainActor in
+                                if self.verificationCancellation === token { self.verificationProgress = update }
+                            }
+                        }, completed: { result in
+                            Task { @MainActor in self.recordVerification(result, plan: plan) }
+                        }, cancelled: { token.isCancelled })
+                }.value
+                // Persist before releasing maintenance, even if progress callbacks are still queued.
+                for result in results { recordVerification(result, plan: plan) }
+                if results.contains(where: { !$0.passed }) { status = L10n.text("Backup verification failed. Review the affected versions.") }
+                else if let result = results.last { status = L10n.text("Files verified OK: %@", result.files) }
+                else { status = L10n.text("No backup versions are due for verification.") }
+            } catch {
+                if token.isCancelled { status = L10n.text("Verification cancelled. Previous results were kept.") }
+                else { status = L10n.text("Verification could not finish."); self.error = error.localizedDescription }
+            }
+        }
+    }
+
+    private func recordVerification(_ result: BackupVerificationResult, plan: BackupPlan) {
+        guard let index = plans.firstIndex(where: { $0.id == plan.id }), plans[index].destination == plan.destination,
+              (plans[index].verificationResults?[result.id]?.lastVerifiedAt ?? .distantPast) < result.lastVerifiedAt else { return }
+        var updated = plans
+        if updated[index].verificationResults == nil { updated[index].verificationResults = [:] }
+        updated[index].verificationResults?[result.id] = result
+        do { try persist(updated); plans = updated }
+        catch { self.error = L10n.text("Could not save verification results: %@", error.localizedDescription) }
     }
 
     func run(_ plan: BackupPlan) { start(plan, skipUnchanged: false) }
 
     func cancel() {
         cancellation?.cancel()
+        verificationCancellation?.cancel()
         if runningID != nil { status = L10n.text("Stopping backup…") }
     }
 
@@ -316,6 +425,7 @@ final class BackupStore: ObservableObject {
                 runningID = nil
                 progress = nil
                 cancellation = nil
+                checkVerificationSchedules(now: Date())
             }
             do {
                 let result = try await Task.detached(priority: .utility) { [self] () throws -> (snapshot: BackupSnapshot?, fingerprint: String, sources: [FolderSelection], destination: FolderSelection, cleanup: String?) in
@@ -361,6 +471,7 @@ final class BackupStore: ObservableObject {
                 updated[index].destination = result.destination
                 updated[index].lastError = nil
                 if let snapshot = result.snapshot {
+                    verificationRetryAfter[plan.id] = nil
                     updated[index].lastAttempt = started
                     updated[index].lastSuccess = Date()
                     updated[index].lastFingerprint = result.fingerprint

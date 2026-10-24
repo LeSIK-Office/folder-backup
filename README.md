@@ -11,7 +11,7 @@ or just the files you need.
 
 | Item | Current release |
 |---|---|
-| Version | **1.5.1 beta 1**, app build **16**, tag `v1.5.1-beta.1` |
+| Version | **1.6.0 beta 1**, app build **17**, tag `v1.6.0-beta.1` |
 | Platform | macOS **14.0+**, native SwiftUI/AppKit app |
 | Architectures | Universal: Apple Silicon `arm64` and Intel `x86_64` |
 | Price | Free; no subscription, account, advertising or paid feature tier |
@@ -54,12 +54,12 @@ and every filesystem combination have not been established.
 ## Download and install
 
 1. Open [Releases](https://github.com/LeSIK-Office/folder-backup/releases), select
-   **`v1.5.1-beta.1`**, and download `FolderBackup-1.5.1-beta.1-universal.zip`.
+   **`v1.6.0-beta.1`**, and download `FolderBackup-1.6.0-beta.1-universal.zip`.
    GitHub's **Source code** archives contain source, not an installed app.
 2. Optionally download `SHA256SUMS` and compare the app ZIP's hash:
 
    ```sh
-   shasum -a 256 FolderBackup-1.5.1-beta.1-universal.zip
+   shasum -a 256 FolderBackup-1.6.0-beta.1-universal.zip
    ```
 
    This checks file consistency; it does not replace Apple signing or notarization.
@@ -93,6 +93,32 @@ If backup stops or fails, reconnect the intended drive, resolve the displayed
 cause and use **Resume Backup**. Reusable copies remain available. An interrupted
 restore may leave a hidden partial folder; retry creates a fresh output instead
 of treating the partial folder as complete.
+
+## Verify a saved version (new in 1.6.0)
+
+Choose **Verify Version** beside a completed entry in Saved Backups or Restore &
+History. It reads stored contents and checks SHA-256 without creating a restore
+folder, changing the backup store or touching source files. Progress shows
+checked/total regular files and supports **Cancel Verification**. Open the result
+badge for a count, timestamp and any missing, unreadable or mismatched file paths.
+Incomplete versions cannot be verified.
+
+In **Settings → Schedule → Scheduled Verification**, opt into daily, weekly or
+monthly checks (default **Off**). The app checks all completed versions that have
+never been verified or whose last check is older than that calendar interval.
+Existing and newly created versions follow the same rule. Shared contents are
+read once per batch and results are mapped back to every referring file/version.
+Backup jobs take priority; verification needs the app running and drive connected.
+
+Results and `lastVerifiedAt` are stored only in this Mac’s existing plan settings.
+A failed version gets a visible warning badge; successful checks update quietly.
+Cancelled work does not mark an unfinished version verified; already completed
+version checks and earlier results remain available. This checks stored regular
+file contents and catalog consistency, not a physical test restore or live-source
+comparison. It cannot guarantee future drive health or atomic database recovery.
+
+The test-restore feature idea was suggested by **@RyanJ_KOL** and provided in the
+project brief; this credit does not imply endorsement.
 
 ## Incremental versions and disk usage
 

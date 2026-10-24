@@ -308,3 +308,47 @@
 "You can change the schedule during a backup. Stop the backup before changing folders or retention." = "Puedes cambiar el horario durante una copia. Detén la copia para cambiar carpetas o versiones guardadas.";
 "Your first backup is running. It will appear here when complete." = "La primera copia está en curso. Aparecerá aquí cuando termine.";
 "Your folders. Simply backed up." = "Tus carpetas, a buen recaudo.";
+
+"Off" = "Desactivada";
+
+"Verify Version" = "Verificar versión";
+
+"Not verified yet" = "Sin verificar";
+
+"Files verified OK: %@" = "Archivos verificados: %@";
+
+"Verification failed · Issues: %@" = "Verificación fallida · Problemas: %@";
+
+"Verifying files: %@ / %@" = "Verificando archivos: %@ / %@";
+
+"Cancel Verification" = "Cancelar verificación";
+
+"Reading backup catalog…" = "Leyendo el catálogo de la copia…";
+
+"Verification Result" = "Resultado de la verificación";
+
+"Unique contents read in this run: %@" = "Contenidos únicos leídos en esta ejecución: %@";
+
+"SHA-256 checks read saved contents without creating a restore folder. Backup data and source files are never changed. Results are saved only in this Mac’s plan settings." = "Se lee el contenido guardado y se comprueba su SHA-256 sin crear una carpeta de restauración. No se modifica la copia ni los archivos originales. Los resultados se guardan solo en los ajustes del plan de este Mac.";
+
+"Scheduled Verification" = "Verificación periódica";
+
+"Verify Saved Versions" = "Frecuencia de verificación";
+
+"Off by default. Checks every completed version that has never been verified or is due again. The app must be running and the drive connected. Failures appear on the affected version; successful checks stay quiet." = "Desactivada de forma predeterminada. Comprueba todas las versiones completas sin verificar o cuyo intervalo ya haya vencido. La app debe estar abierta y la unidad conectada. Los fallos se señalan en la versión afectada; los resultados correctos se registran sin avisos.";
+
+"Verification only reads backup data. It does not restore files or use extra backup space." = "La verificación solo lee la copia. No restaura archivos ni ocupa espacio adicional en la unidad de copia.";
+
+"Stopping verification…" = "Deteniendo la verificación…";
+
+"Verifying saved backups…" = "Verificando las copias guardadas…";
+
+"Backup verification failed. Review the affected versions." = "Se han detectado problemas en la copia. Revisa las versiones afectadas.";
+
+"No backup versions are due for verification." = "No hay versiones pendientes de verificar.";
+
+"Verification cancelled. Previous results were kept." = "Verificación cancelada. Se conservaron los resultados anteriores.";
+
+"Verification could not finish." = "No se pudo completar la verificación.";
+
+"Could not save verification results: %@" = "No se pudieron guardar los resultados: %@";

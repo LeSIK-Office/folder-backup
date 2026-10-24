@@ -40,3 +40,29 @@ Not yet established: Developer ID distribution/notarization, downloaded install
 on another Mac, Intel hardware execution, oldest-supported macOS execution and
 physical power-loss behavior. A fixture, universal build or sample restore does
 not replace those checks.
+
+## Version 1.6.0 beta 1 — October 24, 2026
+
+The new verification action checks stored regular-file contents and catalog
+consistency without producing a restore directory or modifying the backup store.
+Version verification results and timestamps live only in local plan settings.
+
+Targeted automated checks cover packed and loose content, one read per shared
+object across two versions, renamed aliases, every missing/corrupt path,
+continuation past failures, progress/cancellation, writer exclusion, incomplete
+version rejection, truncated catalogs, legacy catalogs and old settings.
+Runtime checks exercise default OFF, opt-in daily/weekly/monthly intervals,
+existing/new versions, persisted results, independent paused-backup settings,
+continuous-backup scheduling and cancelled/failed checks.
+
+The complete real-data restore figures above were measured on October 22 with
+1.5.1. They have not been repeated as a new full restore of 1.6.0. Tests of this
+feature are checksum verification, not a claim of another physical test restore.
+
+### 한국어
+
+1.6.0의 버전 검사는 복원 사본을 만들지 않고 저장된 일반 파일과 목록을 확인합니다.
+백업·원본은 읽기만 하며 결과·시각은 Mac 계획 설정에만 기록합니다. 중복 내용·이름 변경·
+손상·누락·취소·동시 쓰기·미완료 거부·이전 형식과 예약·설정 유지 검사를 포함합니다.
+위의 실제 데이터 전체 복원 수치는 10월 22일 1.5.1에서 측정한 것이며 1.6.0에서 전체
+복원을 다시 수행했다는 의미가 아닙니다.

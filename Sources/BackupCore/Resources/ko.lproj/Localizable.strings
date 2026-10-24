@@ -308,3 +308,47 @@
 "You can change the schedule during a backup. Stop the backup before changing folders or retention." = "백업 중에도 예약은 변경할 수 있습니다. 폴더·보관 변경은 중지 후 가능합니다.";
 "Your first backup is running. It will appear here when complete." = "첫 백업이 진행 중입니다. 완료되면 이곳에 카트리지가 추가됩니다.";
 "Your folders. Simply backed up." = "선택한 폴더만, 간편하게.";
+
+"Off" = "끔";
+
+"Verify Version" = "버전 검사";
+
+"Not verified yet" = "아직 검사하지 않음";
+
+"Files verified OK: %@" = "파일 %@개 정상 확인";
+
+"Verification failed · Issues: %@" = "검사 실패 · 문제 %@개";
+
+"Verifying files: %@ / %@" = "파일 검사 중: %@ / %@";
+
+"Cancel Verification" = "검사 취소";
+
+"Reading backup catalog…" = "백업 목록을 읽고 있습니다…";
+
+"Verification Result" = "백업 검사 결과";
+
+"Unique contents read in this run: %@" = "이번에 읽어 검사한 고유 파일 내용: %@개";
+
+"SHA-256 checks read saved contents without creating a restore folder. Backup data and source files are never changed. Results are saved only in this Mac’s plan settings." = "복원 폴더를 만들지 않고 저장된 내용을 읽어 SHA-256을 확인합니다. 백업과 원본 파일은 변경하지 않으며, 결과는 이 Mac의 계획 설정에만 저장합니다.";
+
+"Scheduled Verification" = "예약 무결성 검사";
+
+"Verify Saved Versions" = "완료본 검사 주기";
+
+"Off by default. Checks every completed version that has never been verified or is due again. The app must be running and the drive connected. Failures appear on the affected version; successful checks stay quiet." = "기본값은 꺼짐입니다. 한 번도 검사하지 않았거나 주기가 지난 완료본을 모두 검사합니다. 앱 실행과 드라이브 연결이 필요합니다. 문제가 있는 버전에 실패를 표시하며, 정상 결과는 별도 알림 없이 기록합니다.";
+
+"Verification only reads backup data. It does not restore files or use extra backup space." = "검사는 백업을 읽기만 합니다. 파일을 복원하거나 백업 공간을 추가로 사용하지 않습니다.";
+
+"Stopping verification…" = "검사를 중지하고 있습니다…";
+
+"Verifying saved backups…" = "완료된 백업을 검사하고 있습니다…";
+
+"Backup verification failed. Review the affected versions." = "백업 검사에서 문제가 발견됐습니다. 해당 버전의 상세 내용을 확인하세요.";
+
+"No backup versions are due for verification." = "지금 검사할 백업 버전이 없습니다.";
+
+"Verification cancelled. Previous results were kept." = "검사를 취소했습니다. 이전 검사 결과는 유지됩니다.";
+
+"Verification could not finish." = "검사를 완료하지 못했습니다.";
+
+"Could not save verification results: %@" = "검사 결과를 저장하지 못했습니다: %@";

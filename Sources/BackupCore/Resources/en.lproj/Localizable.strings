@@ -308,3 +308,47 @@
 "You can change the schedule during a backup. Stop the backup before changing folders or retention." = "You can change the schedule during a backup. Stop the backup before changing folders or retention.";
 "Your first backup is running. It will appear here when complete." = "Your first backup is running. It will appear here when complete.";
 "Your folders. Simply backed up." = "Your folders. Simply backed up.";
+
+"Off" = "Off";
+
+"Verify Version" = "Verify Version";
+
+"Not verified yet" = "Not verified yet";
+
+"Files verified OK: %@" = "Files verified OK: %@";
+
+"Verification failed · Issues: %@" = "Verification failed · Issues: %@";
+
+"Verifying files: %@ / %@" = "Verifying files: %@ / %@";
+
+"Cancel Verification" = "Cancel Verification";
+
+"Reading backup catalog…" = "Reading backup catalog…";
+
+"Verification Result" = "Verification Result";
+
+"Unique contents read in this run: %@" = "Unique contents read in this run: %@";
+
+"SHA-256 checks read saved contents without creating a restore folder. Backup data and source files are never changed. Results are saved only in this Mac’s plan settings." = "SHA-256 checks read saved contents without creating a restore folder. Backup data and source files are never changed. Results are saved only in this Mac’s plan settings.";
+
+"Scheduled Verification" = "Scheduled Verification";
+
+"Verify Saved Versions" = "Verify Saved Versions";
+
+"Off by default. Checks every completed version that has never been verified or is due again. The app must be running and the drive connected. Failures appear on the affected version; successful checks stay quiet." = "Off by default. Checks every completed version that has never been verified or is due again. The app must be running and the drive connected. Failures appear on the affected version; successful checks stay quiet.";
+
+"Verification only reads backup data. It does not restore files or use extra backup space." = "Verification only reads backup data. It does not restore files or use extra backup space.";
+
+"Stopping verification…" = "Stopping verification…";
+
+"Verifying saved backups…" = "Verifying saved backups…";
+
+"Backup verification failed. Review the affected versions." = "Backup verification failed. Review the affected versions.";
+
+"No backup versions are due for verification." = "No backup versions are due for verification.";
+
+"Verification cancelled. Previous results were kept." = "Verification cancelled. Previous results were kept.";
+
+"Verification could not finish." = "Verification could not finish.";
+
+"Could not save verification results: %@" = "Could not save verification results: %@";
