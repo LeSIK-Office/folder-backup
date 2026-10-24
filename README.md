@@ -11,12 +11,12 @@ or just the files you need.
 
 | Item | Current release |
 |---|---|
-| Version | **1.6.1 beta 1**, app build **18**, tag `v1.6.1-beta.1` |
+| Version | **1.6.1 beta 2**, app build **18**, tag `v1.6.1-beta.2` |
 | Platform | macOS **14.0+**, native SwiftUI/AppKit app |
 | Architectures | Universal: Apple Silicon `arm64` and Intel `x86_64` |
 | Price | Free; no subscription, account, advertising or paid feature tier |
 | License | [MIT](LICENSE), including commercial use and modification |
-| Distribution | GitHub prerelease; **Developer ID signed, not Apple notarized** |
+| Distribution | GitHub prerelease; **Developer ID signed and Apple notarized; ticket stapled** |
 
 This is a beta. Apple Silicon execution has been tested locally; Intel hardware
 and the oldest supported macOS have not. Read the [validation scope](docs/VALIDATION-SUMMARY.md)
@@ -54,21 +54,20 @@ and every filesystem combination have not been established.
 ## Download and install
 
 1. Open [Releases](https://github.com/LeSIK-Office/folder-backup/releases), select
-   **`v1.6.1-beta.1`**, and download `FolderBackup-1.6.1-beta.1-universal.zip`.
+   **`v1.6.1-beta.2`**, and download `FolderBackup-1.6.1-beta.2-universal.zip`.
    GitHub's **Source code** archives contain source, not an installed app.
 2. Optionally download `SHA256SUMS` and compare the app ZIP's hash:
 
    ```sh
-   shasum -a 256 FolderBackup-1.6.1-beta.1-universal.zip
+   shasum -a 256 FolderBackup-1.6.1-beta.2-universal.zip
    ```
 
    This checks file consistency; it does not replace Apple signing or notarization.
 3. Unzip and drag **Folder Backup.app** into **Applications**, then open it there.
-4. This beta is not notarized, so macOS may block the first launch. If you trust
-   the download, review the app-specific **System Settings → Privacy & Security →
-   Open Anyway** option, following [Apple's instructions](https://support.apple.com/en-us/102445).
-   Availability depends on macOS and device-management policy. Do not disable
-   Gatekeeper globally. Stop if macOS reports detected malware.
+4. This release includes Apple's notarization ticket. Follow the standard macOS
+   first-launch prompt for an app downloaded from the Internet, following
+   [Apple's instructions](https://support.apple.com/en-us/102445).
+   Device-management policies may impose additional restrictions.
 5. Approve access to the folders and removable drives you intend to use. Protected
    folders or managed Macs may require permission changes by their owner/admin.
 

@@ -1,12 +1,12 @@
 {
   ".gitignore": "76900c6b4cdf2f4379ace36095629c4f3f3bc0af0c1760f35ca580597070696e",
-  "CHANGELOG.md": "2d91d0b1faaeb52df4a3c968bbec01742fa119e448799274fe69e44f23d835bf",
+  "CHANGELOG.md": "28fc012574598ca75a8927cef3d023b40a96f69c6a62088dc1612a220419b0eb",
   "LICENSE": "78ad968889b7e34665d11693e4262f5f826663ed5dd200496163e6348d8d10fb",
   "PRIVACY.ko.md": "c7169c5a04a990dfce952485bd41b7ba352b7665d642cd8e0a5cd25a45aca562",
   "PRIVACY.md": "bb3345b27ca451ade144d54211a268d3f32eab25a8c378855900ca48e304cb46",
   "Package.swift": "1c9dc16a7f6d02e7e8c1595a3b0fcc4fa113862f9d6a02f34e1d474c19efea0c",
-  "README.ko.md": "17fa0b42a5db592444500c39ce55f888288038d75976152d7f7cad2f92cc81c2",
-  "README.md": "2427c34372bd7f6511dbfff48a4b75af719b147b633f084ebd8e4b9cf2b36917",
+  "README.ko.md": "6a142b671b71212e11db4bcc9a85c63f1140d5ae09ed680d9a184849af3caf66",
+  "README.md": "b5a190486a868a4c7905a5d4809f7693378e45757d952a3c7aee7e13c51f6771",
   "Resources/FolderBackup.icns": "af0574cf35b128082b47f3528a3735de04f3e3e5403b0b8c8925ddaab56502f1",
   "Resources/FolderBackupMark.png": "53421d209e89a49b5d07a62b935858fbf4d497df4d4c0de6bc262856ef566d2a",
   "Resources/Info.plist": "e8b7705d14d8a55851d7eed2cb0979754b13a4bf135309a83b27311d1e3ab6fd",
@@ -52,10 +52,10 @@
   "Tests/VerificationCheck.swift": "66665dc168fceaad743810a1b33574bb9d6f1b793e061d0988a5e737791e78a9",
   "Tests/VerificationRuntimeCheck.swift": "18552a0dd5dddb4818987a72a958116e1ac988fc62241a123d02811e106dfa6f",
   "docs/ARCHITECTURE.md": "cdd8758799c3fac6f0057adf946cd68a14f556e2e2514a978084470587d87538",
-  "docs/LEGAL.md": "bf53d7d15c763478717b4e0124c2f0c0704ee462f7ffeef5a8da0c47e11803be",
+  "docs/LEGAL.md": "7733c72c0ae2b51c558e4df823046fbd97709fc43d82ffad9aef957eccae83b5",
   "docs/LOCALIZATION.md": "18d555c03716360043b51e1a361a2caf8e23de4054d267a0f0a42d950a985b83",
-  "docs/RELEASE.md": "7716bbc266d377791c6ca37f0af91ea2971bb3adf7f6a36f90c85f15cf1ef3e0",
-  "docs/VALIDATION-SUMMARY.md": "4e37ef436c920e48dfa6fc791c6af0f5681218c5aa4e9ee88c4e113418cf4f92",
+  "docs/RELEASE.md": "3943ae3848de2c6fd874a694796002b0f9192b9d39435c615a8d59a5beff2eef",
+  "docs/VALIDATION-SUMMARY.md": "7455c224b466534d7baa072c15cb0937e4f42339d6b270bd2b6e502910693050",
   "scripts/build-manifest.py": "970e93bd391b213d47f40f2df598ec45ff7061621b721d510946d719dac498b9",
   "scripts/build.sh": "3118d980a7bb20501008d35e106f7b3cc9778e7bf0fd5795d39f13f1c910e603",
   "scripts/check-faults.py": "00de17cf4457e52702988d4eaeda7f22413f456352679c395f243048ae33c537",
@@ -63,5 +63,5 @@
   "scripts/check-runtime.sh": "d4f150e7ab41692cb4ba6dffbb12981e1733c612c901143e74b8380f53f38380",
   "scripts/export-public.py": "c8c304bc6679daf1df44cbf065fc574440504b6b60dc942b25b61060d251fca0",
   "scripts/generate-icon.swift": "b0f7c39456bbadf1aa8b59b6956cca23f49b45879e23d27ff19b5f9856e732eb",
-  "scripts/package-release.sh": "382317f4119cfe30093a55fb71aca9121cdfd33863fdc1af6bad059f9669cbbe"
+  "scripts/package-release.sh": "28a9e9457121d3cf57696eed202ca4813a8c76c2e16dc18e2589ecf620b6616c"
 }

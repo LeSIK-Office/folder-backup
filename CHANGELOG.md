@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.6.1 beta 2 — 2026-10-24 (build 18)
+
+- Apple notarization accepted for the existing build 18; staple and validate the ticket.
+- Gatekeeper assessment accepts the app as **Notarized Developer ID**.
+- Publish the ticket-bearing ZIP and updated checksums. Application code and backup format are unchanged.
+
+### 한국어
+
+- 기존 빌드 18의 Apple 공증 승인을 받고 공증 티켓 첨부·검증을 마쳤습니다.
+- Gatekeeper의 **Notarized Developer ID** 판정을 확인했습니다.
+- 공증 티켓을 포함한 ZIP과 체크섬을 배포합니다. 앱 코드와 백업 형식은 동일합니다.
+
 ## 1.6.1 beta 1 — 2026-10-24 (build 18)
 
 - Keep saved backup cards visible while calculating disk usage. Switching back to the app no longer restarts a full storage scan.

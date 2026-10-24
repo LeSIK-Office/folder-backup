@@ -1,6 +1,6 @@
 # Release preparation
 
-The current package is a GitHub beta prerelease, Developer ID signed and not notarized.
+The current package is a GitHub beta prerelease, Developer ID signed and Apple notarized, with a stapled ticket.
 A successful build or local signature check is not proof that a downloaded app
 will open on another Mac. Public source publication does not require Apple
 membership; an unnotarized binary can be blocked by Gatekeeper. The English and
@@ -11,7 +11,7 @@ Korean READMEs explain installation and this limitation.
 ```sh
 zsh scripts/check-release.sh
 zsh scripts/build.sh
-zsh scripts/package-release.sh
+BETA_NUMBER=2 zsh scripts/package-release.sh
 ```
 
 The checks exercise backup/restore, retention, scheduling, localization, memory

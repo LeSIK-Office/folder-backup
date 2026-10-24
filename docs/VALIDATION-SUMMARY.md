@@ -1,6 +1,6 @@
 # Validation summary
 
-The published beta is not Apple notarized.
+The current 1.6.1 beta 2 is Apple notarized with a stapled ticket. Historical validation entries below describe the state at the time of each test.
 
 Confirmed on October 22, 2026:
 
@@ -92,3 +92,20 @@ feature are checksum verification, not a claim of another physical test restore.
 보안 타임스탬프 검증도 통과했습니다. 실제 보관본 5개는 교체 전 1.6.0에서 일반 파일
 검사를 마쳤고 오류가 없었습니다. 1.6.1의 전체 물리 복원·Apple 공증·Intel 실기기
 검증을 완료했다는 의미는 아닙니다.
+
+
+## Version 1.6.1 beta 2 — October 24, 2026
+
+Apple accepted notarization submission `30373dc2-27d5-4527-b404-55a21db5432c`
+for the signed build 18. The service reported status code 0 and no issues. The
+app's ticket passed `stapler validate`, its signature passed strict verification,
+and Gatekeeper assessment returned `accepted` / `Notarized Developer ID`.
+The installed app received the same ticket; its executable and backup settings
+were unchanged. This packaging update does not rebuild the application code.
+
+### 한국어
+
+빌드 18의 Apple 공증이 승인됐고 오류는 없었습니다. 배포 앱과 설치 앱의 공증 티켓·
+서명을 검증하고 Gatekeeper 허용 판정을 확인했습니다. 공증 티켓만 추가했으며
+실행 파일·백업 설정은 동일합니다. 다른 Mac의 실제 설치 실행·Intel 실기기·전체
+물리 복원을 이번 공증 절차로 검증했다는 의미는 아닙니다.
