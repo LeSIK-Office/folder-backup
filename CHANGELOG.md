@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.6.1 beta 1 — 2026-10-24 (build 18)
+
+- Keep saved backup cards visible while calculating disk usage. Switching back to the app no longer restarts a full storage scan.
+- Cancel superseded disk-usage scans and avoid rescanning after read-only verification.
+- Sign the universal app with Developer ID, hardened runtime and a secure timestamp. Apple notarization remains pending.
+
+### 한국어
+
+- 디스크 사용량을 계산하기 전에 백업 목록부터 표시하며, 앱으로 돌아올 때마다 전체 목록을 다시 로딩하지 않습니다.
+- 이전 용량 계산 작업은 취소하고, 읽기 전용 검사 완료 후 불필요한 재탐색을 생략합니다.
+- Developer ID·강화된 런타임·보안 타임스탬프 서명을 적용했습니다. Apple 공증은 아직 진행하지 않았습니다.
+
 ## 1.6.0 beta 1 — 2026-10-24 (build 17)
 
 - Add per-version **Verify Version** with SHA-256 checks, progress, cancellation and detailed missing/corrupt/unreadable paths.

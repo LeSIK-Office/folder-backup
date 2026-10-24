@@ -1,6 +1,6 @@
 # Release preparation
 
-The current package is a GitHub beta prerelease, ad-hoc signed and not notarized.
+The current package is a GitHub beta prerelease, Developer ID signed and not notarized.
 A successful build or local signature check is not proof that a downloaded app
 will open on another Mac. Public source publication does not require Apple
 membership; an unnotarized binary can be blocked by Gatekeeper. The English and

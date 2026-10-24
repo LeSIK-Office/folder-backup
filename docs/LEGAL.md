@@ -60,7 +60,7 @@ archives. Functional inspiration does not promise identical behavior.
   of every legal claim is made; a rights concern should identify the specific
   material and basis through the repository's contact/issue channel without
   exposing private data.
-- The current binary is ad-hoc signed and not notarized, not Apple-certified or
+- The current binary is Developer ID signed and not notarized, not Apple-certified or
   App Store reviewed. Publishing on GitHub does not confer Apple approval.
   Apple tools/services remain subject to their [applicable agreements](https://developer.apple.com/support/terms/).
 - Backup only files you have authority to handle. This app does not encrypt
@@ -130,7 +130,7 @@ Windows 동작 비교는 공식 문서에 근거하며 Windows 앱을 실행해 
   디자인·제조사 EULA·역분석 제한에 대한 독립적인 법률 검토는 받지 않았습니다.
   권리 문제가 있다고 판단하면 해당 자료와 근거를 저장소 문의 경로로 알려 주세요.
   공개 이슈에 민감한 자료를 첨부하지 마세요.
-- 현재 바이너리는 ad-hoc 서명·미공증 베타이며 Apple 인증·App Store 심사를 받은 제품이
+- 현재 바이너리는 Developer ID 서명·미공증 베타이며 Apple 인증·App Store 심사를 받은 제품이
   아닙니다. GitHub 공개가 Apple 승인을 뜻하지 않습니다. Apple 개발 도구·서비스에는
   [해당 약관](https://developer.apple.com/support/terms/)이 별도로 적용됩니다.
 - 처리 권한이 있는 파일만 백업해야 합니다. 백업 암호화·타인 파일 접근 권한 부여·법규

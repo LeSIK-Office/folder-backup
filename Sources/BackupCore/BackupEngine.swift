@@ -486,10 +486,11 @@ public final class BackupEngine: Sendable {
         return originals.count
     }
 
-    public func storageBytes(destination: URL, planID: UUID) throws -> Int64 {
+    public func storageBytes(destination: URL, planID: UUID, cancelled: @Sendable () -> Bool = { false }) throws -> Int64 {
         let root = try planRoot(try existingDirectory(destination), planID, create: false)
         // Foundation hides AppleDouble entries; POSIX includes their real allocation on exFAT.
         func allocated(_ url: URL) throws -> Int64 {
+            if cancelled() { throw BackupError.cancelled }
             var attributes = stat()
             guard lstat(url.path, &attributes) == 0 else { throw NSError(domain: NSPOSIXErrorDomain, code: Int(errno)) }
             guard attributes.st_mode & S_IFMT != S_IFLNK else { throw BackupError.invalid(L10n.text("A backup storage path contains a symbolic link: ") + url.path) }

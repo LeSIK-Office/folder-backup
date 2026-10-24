@@ -1,6 +1,6 @@
 # Validation summary
 
-This is a local beta candidate, not a notarized public binary release.
+The published beta is not Apple notarized.
 
 Confirmed on October 22, 2026:
 
@@ -66,3 +66,29 @@ feature are checksum verification, not a claim of another physical test restore.
 손상·누락·취소·동시 쓰기·미완료 거부·이전 형식과 예약·설정 유지 검사를 포함합니다.
 위의 실제 데이터 전체 복원 수치는 10월 22일 1.5.1에서 측정한 것이며 1.6.0에서 전체
 복원을 다시 수행했다는 의미가 아닙니다.
+
+
+## Version 1.6.1 beta 1 — October 24, 2026
+
+- Native UI fixture checks confirmed that hiding/reopening the app and finishing
+  read-only verification retain existing saved-backup cards. Moving only the
+  fixture catalog made manual refresh show zero versions; restoring that catalog
+  and refreshing showed the completed version again. No real backup was moved.
+- Storage-sizing cancellation and the existing verification fixture checks passed
+  without changing the fixture backup inventory.
+- The universal arm64/x86_64 app passed strict code-signature and runtime-source
+  manifest verification. Its Developer ID signature includes hardened runtime,
+  an Apple certificate chain and a secure timestamp. It is not notarized.
+- The local installed upgrade preserved plan settings and all five verification
+  records byte for byte. Hiding/reopening the installed app retained the cards.
+- All five retained real versions completed regular-file verification with zero
+  issues in the installed 1.6.0 app before the upgrade. This is checksum checking;
+  a full physical restore was not repeated for 1.6.1.
+
+### 한국어
+
+앱 복귀·읽기 전용 검사 완료 시 카드 유지와 수동 새로고침 반영을 별도 검증 앱에서
+확인했습니다. 용량 계산 취소·백업 보존 검사와 Universal 빌드의 Developer ID 서명·
+보안 타임스탬프 검증도 통과했습니다. 실제 보관본 5개는 교체 전 1.6.0에서 일반 파일
+검사를 마쳤고 오류가 없었습니다. 1.6.1의 전체 물리 복원·Apple 공증·Intel 실기기
+검증을 완료했다는 의미는 아닙니다.

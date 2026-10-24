@@ -11,12 +11,12 @@ or just the files you need.
 
 | Item | Current release |
 |---|---|
-| Version | **1.6.0 beta 1**, app build **17**, tag `v1.6.0-beta.1` |
+| Version | **1.6.1 beta 1**, app build **18**, tag `v1.6.1-beta.1` |
 | Platform | macOS **14.0+**, native SwiftUI/AppKit app |
 | Architectures | Universal: Apple Silicon `arm64` and Intel `x86_64` |
 | Price | Free; no subscription, account, advertising or paid feature tier |
 | License | [MIT](LICENSE), including commercial use and modification |
-| Distribution | GitHub prerelease; **ad-hoc signed, not Apple notarized** |
+| Distribution | GitHub prerelease; **Developer ID signed, not Apple notarized** |
 
 This is a beta. Apple Silicon execution has been tested locally; Intel hardware
 and the oldest supported macOS have not. Read the [validation scope](docs/VALIDATION-SUMMARY.md)
@@ -54,12 +54,12 @@ and every filesystem combination have not been established.
 ## Download and install
 
 1. Open [Releases](https://github.com/LeSIK-Office/folder-backup/releases), select
-   **`v1.6.0-beta.1`**, and download `FolderBackup-1.6.0-beta.1-universal.zip`.
+   **`v1.6.1-beta.1`**, and download `FolderBackup-1.6.1-beta.1-universal.zip`.
    GitHub's **Source code** archives contain source, not an installed app.
 2. Optionally download `SHA256SUMS` and compare the app ZIP's hash:
 
    ```sh
-   shasum -a 256 FolderBackup-1.6.0-beta.1-universal.zip
+   shasum -a 256 FolderBackup-1.6.1-beta.1-universal.zip
    ```
 
    This checks file consistency; it does not replace Apple signing or notarization.

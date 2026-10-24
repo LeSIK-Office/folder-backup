@@ -15,13 +15,14 @@ struct BackupCartridgesView: View {
     @State private var deleting: BackupSnapshot?
     @State private var deletingNow = false
     @State private var error: String?
+    @State private var verifying = false
 
     var body: some View {
         BackupCard {
             VStack(alignment: .leading, spacing: 14) {
                 HStack(spacing: 8) {
                     Text(L10n.text("Saved Backups")).font(.system(size: 16, weight: .semibold))
-                    if !loading && !unavailable {
+                    if !unavailable && (!loading || !snapshots.isEmpty) {
                         Text(L10n.text("Completed: %@", snapshots.count)).font(.system(size: 12, weight: .medium)).foregroundStyle(BackupTheme.accent)
                     }
                     Spacer()
@@ -29,7 +30,7 @@ struct BackupCartridgesView: View {
                         .buttonStyle(.plain).accessibilityLabel(L10n.text("Refresh Saved Backups")).disabled(loading || store.maintenance)
                 }
                 VerificationProgressView(store: store, planID: plan.id)
-                if loading {
+                if loading && snapshots.isEmpty {
                     HStack(spacing: 8) {
                         ProgressView().controlSize(.small)
                         Text(L10n.text("Checking saved backups…")).font(.system(size: 12)).foregroundStyle(.secondary)
@@ -102,8 +103,10 @@ struct BackupCartridgesView: View {
         .task(id: refreshID) { await load() }
         .onChange(of: plan.lastSuccess) { _, _ in refreshID = UUID() }
         .onChange(of: plan.destination) { _, _ in refreshID = UUID() }
-        .onChange(of: store.maintenance) { _, active in if !active { refreshID = UUID() } }
-        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in refreshID = UUID() }
+        .onChange(of: store.maintenance) { _, active in
+            if active { verifying = store.verificationPlanID != nil }
+            else if !verifying { refreshID = UUID() }
+        }
         .onReceive(NSWorkspace.shared.notificationCenter.publisher(for: NSWorkspace.didMountNotification)) { _ in refreshID = UUID() }
         .onReceive(NSWorkspace.shared.notificationCenter.publisher(for: NSWorkspace.didUnmountNotification)) { _ in refreshID = UUID() }
     }
@@ -129,22 +132,25 @@ struct BackupCartridgesView: View {
 
     @MainActor private func load() async {
         loading = true
+        defer { if !Task.isCancelled { loading = false } }
         do {
             let destination = try plan.destination.resolve()
             let id = plan.id
-            let result = try await Task.detached {
-                let engine = BackupEngine()
-                return (snapshots: try engine.snapshots(destination: destination, planID: id),
-                        allocated: try? engine.storageBytes(destination: destination, planID: id))
-            }.value
+            let result = try await Task.detached { try BackupEngine().snapshots(destination: destination, planID: id) }.value
             guard !Task.isCancelled else { return }
-            snapshots = result.snapshots
-            allocatedBytes = result.allocated
+            snapshots = result
             unavailable = false
+            loading = false
+            allocatedBytes = nil
+            let sizing = Task.detached {
+                try BackupEngine().storageBytes(destination: destination, planID: id, cancelled: { Task.isCancelled })
+            }
+            let bytes = try? await withTaskCancellationHandler(operation: { try await sizing.value }, onCancel: { sizing.cancel() })
+            guard !Task.isCancelled else { return }
+            allocatedBytes = bytes
         } catch {
             guard !Task.isCancelled else { return }
             unavailable = true
         }
-        loading = false
     }
 }

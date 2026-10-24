@@ -17,4 +17,4 @@ cp LICENSE PRIVACY.md PRIVACY.ko.md THIRD_PARTY_NOTICES.md CHANGELOG.md docs/LEG
     shasum -a 256 *.zip > SHA256SUMS
 )
 echo "Local beta artifacts: $output"
-echo 'Not published. This ad-hoc beta may be blocked by Gatekeeper; Developer ID signing and notarization remain distribution goals.'
+echo 'Not published. Verify the signing identity; Apple notarization and installation on another Mac remain distribution goals.'

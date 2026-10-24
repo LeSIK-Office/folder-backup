@@ -11,12 +11,12 @@
 
 | 항목 | 현재 배포본 |
 |---|---|
-| 버전 | **1.6.0 beta 1**, 앱 빌드 **17**, 태그 `v1.6.0-beta.1` |
+| 버전 | **1.6.1 beta 1**, 앱 빌드 **18**, 태그 `v1.6.1-beta.1` |
 | 실행 환경 | macOS **14.0 이상**, SwiftUI·AppKit 네이티브 앱 |
 | 아키텍처 | Apple Silicon `arm64`·Intel `x86_64` Universal 앱 |
 | 이용료 | 무료. 구독·계정·광고·유료 기능 구분 없음 |
 | 라이선스 | [MIT](LICENSE). 상업적 이용·수정·재배포 허용 |
-| 배포 상태 | GitHub 사전 배포. **ad-hoc 서명이며 Apple 공증은 받지 않음** |
+| 배포 상태 | GitHub 사전 배포. **Developer ID 서명 완료, Apple 공증은 받지 않음** |
 
 현재는 베타입니다. Apple Silicon에서 실행을 확인했으며 Intel 실기기와 최소 지원
 macOS에서는 아직 실행하지 않았습니다. 중요한 자료를 이 앱 한 곳에만 보관하기 전에
@@ -47,12 +47,12 @@ Mac 전체 대신 프로젝트·문서 등 특정 폴더만 골라 외장 드라
 ## 다운로드·설치
 
 1. [Releases](https://github.com/LeSIK-Office/folder-backup/releases)의
-   **`v1.6.0-beta.1`**에서 `FolderBackup-1.6.0-beta.1-universal.zip`을 받습니다.
+   **`v1.6.1-beta.1`**에서 `FolderBackup-1.6.1-beta.1-universal.zip`을 받습니다.
    GitHub의 **Source code** 파일은 소스이며 설치된 앱이 아닙니다.
 2. 필요하면 함께 제공하는 `SHA256SUMS`와 ZIP의 체크섬을 대조합니다.
 
    ```sh
-   shasum -a 256 FolderBackup-1.6.0-beta.1-universal.zip
+   shasum -a 256 FolderBackup-1.6.1-beta.1-universal.zip
    ```
 
    파일의 일치 여부를 확인하는 검사이며 Apple 서명·공증을 대신하지 않습니다.

@@ -30,6 +30,13 @@ import Darwin
         try fm.moveItem(at: source.appendingPathComponent("same-a"), to: source.appendingPathComponent("renamed"))
         let second = try engine.backup(sources: [source], destination: destination, planID: plan)
         let before = try inventory(destination), originalSource = try inventory(source)
+        check(try engine.storageBytes(destination: destination, planID: plan) > 0)
+        do {
+            _ = try engine.storageBytes(destination: destination, planID: plan, cancelled: { true })
+            preconditionFailure("Cancelled storage scan continued")
+        } catch BackupError.cancelled { }
+        check(try inventory(destination) == before)
+        print("PASS: storage sizing cancels without changing saved backups")
         let progress = ProgressCapture()
         let results = try engine.verifyVersions(snapshotIDs: [first.id, second.id], destination: destination, planID: plan,
             progress: { progress.add($0) })
